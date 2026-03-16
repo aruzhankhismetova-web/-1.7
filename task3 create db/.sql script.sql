@@ -56,3 +56,4 @@ SELECT * FROM Orders;
 SELECT o.order_id, c.full_name, p.product_name, o.quantity 
 FROM Orders o, Customers c, Products p 
 WHERE o.customer_id = c.customer_id AND o.product_id = p.product_id;
+ПО1-24 - Хисметова Аружан
