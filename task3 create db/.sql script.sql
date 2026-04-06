@@ -1,58 +1,63 @@
-CREATE DATABASE shop_db;
-USE shop_db;
+CREATE DATABASE IF NOT EXISTS OnlineShopDB;
+USE OnlineShopDB;
 
-CREATE TABLE Products (
-    product_id INT AUTO_INCREMENT PRIMARY KEY,
-    product_name VARCHAR(100) NOT NULL,
-    category VARCHAR(50) DEFAULT 'General',
-    price DECIMAL(10, 2) NOT NULL CHECK (price > 0),
-    stock_quantity INT NOT NULL DEFAULT 0
+DROP TABLE IF EXISTS Product;
+DROP TABLE IF EXISTS Categories;
+DROP TABLE IF EXISTS Customer;
+
+CREATE TABLE Customer (
+    CustomerID INT PRIMARY KEY NOT NULL AUTO_INCREMENT UNIQUE,
+    CustomerName VARCHAR(255) NOT NULL,
+    CustomerLastName TEXT NOT NULL,
+    CustomerAddress TEXT NOT NULL,
+    CustomerDOB DATE NOT NULL,
+    CustomerJoin DATE NOT NULL,
+    FullNumber VARCHAR(15) NOT NULL UNIQUE
 );
 
-CREATE TABLE Customers (
-    customer_id INT AUTO_INCREMENT PRIMARY KEY,
-    full_name VARCHAR(100) NOT NULL,
-    email VARCHAR(100) UNIQUE NOT NULL,
-    phone VARCHAR(20),
-    registration_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+CREATE TABLE Categories (
+    CategoryID INT PRIMARY KEY NOT NULL AUTO_INCREMENT UNIQUE,
+    CategoryName VARCHAR(255) NOT NULL UNIQUE,
+    CategoryDesc LONGTEXT NOT NULL,
+    Status VARCHAR(20) DEFAULT 'Active'
 );
 
-CREATE TABLE Orders (
-    order_id INT AUTO_INCREMENT PRIMARY KEY,
-    customer_id INT NOT NULL,
-    product_id INT NOT NULL,
-    order_date DATE NOT NULL,
-    quantity INT NOT NULL CHECK (quantity > 0),
-    FOREIGN KEY (customer_id) REFERENCES Customers(customer_id),
-    FOREIGN KEY (product_id) REFERENCES Products(product_id)
+CREATE TABLE Product (
+    ProductID INT PRIMARY KEY NOT NULL AUTO_INCREMENT UNIQUE,
+    ProductName TEXT NOT NULL,
+    ProductCategory INT NOT NULL,
+    SaleCount INT NOT NULL,
+    Price DECIMAL(9,2) NOT NULL,
+    ProductRating DECIMAL(2,1),
+    Stock INT NOT NULL,
+    CONSTRAINT fk_category FOREIGN KEY (ProductCategory) REFERENCES Categories(CategoryID)
 );
 
-ALTER TABLE Customers ADD COLUMN address VARCHAR(255);
-ALTER TABLE Products MODIFY COLUMN product_name VARCHAR(150) NOT NULL;
-ALTER TABLE Customers ADD CONSTRAINT UNIQUE (phone);
+ALTER TABLE Categories MODIFY COLUMN Status VARCHAR(100) DEFAULT 'Active';
+ALTER TABLE Product MODIFY COLUMN ProductName VARCHAR(500) NOT NULL;
+ALTER TABLE Customer MODIFY COLUMN FullNumber VARCHAR(20) NOT NULL UNIQUE;
 
-INSERT INTO Products (product_name, price, stock_quantity) VALUES ('iPhone 15', 999.99, 10);
-INSERT INTO Products (product_name, price, stock_quantity) VALUES ('Samsung S23', 850.00, 15);
-INSERT INTO Products (product_name, price, stock_quantity) VALUES ('MacBook Air', 1200.00, 5);
-INSERT INTO Products (product_name, price, stock_quantity) VALUES ('AirPods Pro', 249.00, 30);
-INSERT INTO Products (product_name, price, stock_quantity) VALUES ('Apple Watch', 399.00, 12);
+INSERT INTO Customer (CustomerName, CustomerLastName, CustomerAddress, CustomerDOB, CustomerJoin, FullNumber) VALUES
+('Ivan', 'Ivanov', 'Almaty', '1990-01-01', '2023-01-01', '+77011111111'),
+('Petr', 'Petrov', 'Astana', '1985-05-05', '2023-02-10', '+77022222222'),
+('Anna', 'Sidorova', 'Atyrau', '1995-10-10', '2023-03-15', '+77053333333'),
+('Elena', 'Smirnova', 'Aktau', '1992-12-12', '2023-04-01', '+77074444444'),
+('Oleg', 'Kuznetsov', 'Pavlodar', '1988-08-08', '2023-05-20', '+77085555555');
 
-INSERT INTO Customers (full_name, email, phone, address) VALUES ('Ivan Ivanov', 'ivan@mail.com', '777111', 'Astana, 12');
-INSERT INTO Customers (full_name, email, phone, address) VALUES ('Sasha Petrov', 'sasha@mail.com', '777222', 'Almaty, 5');
-INSERT INTO Customers (full_name, email, phone, address) VALUES ('Maria Sidorova', 'maria@mail.com', '777333', 'Atyrau, 8');
-INSERT INTO Customers (full_name, email, phone, address) VALUES ('Elena Kim', 'elena@mail.com', '777444', 'Astana, 45');
-INSERT INTO Customers (full_name, email, phone, address) VALUES ('Oleg Pak', 'oleg@mail.com', '777555', 'Almaty, 1');
+INSERT INTO Categories (CategoryName, CategoryDesc) VALUES
+('Phones', 'Smartphones'),
+('Laptops', 'Portable computers'),
+('Audio', 'Sound devices'),
+('Watches', 'Accessories'),
+('Tablets', 'Multimedia devices');
 
-INSERT INTO Orders (customer_id, product_id, order_date, quantity) VALUES (1, 1, '2023-10-01', 1);
-INSERT INTO Orders (customer_id, product_id, order_date, quantity) VALUES (2, 3, '2023-10-02', 1);
-INSERT INTO Orders (customer_id, product_id, order_date, quantity) VALUES (3, 4, '2023-10-05', 2);
-INSERT INTO Orders (customer_id, product_id, order_date, quantity) VALUES (4, 2, '2023-10-10', 1);
-INSERT INTO Orders (customer_id, product_id, order_date, quantity) VALUES (5, 5, '2023-10-12', 1);
+INSERT INTO Product (ProductName, ProductCategory, SaleCount, Price, ProductRating, Stock) VALUES
+('iPhone 15', 1, 100, 500000.00, 4.8, 10),
+('MacBook', 2, 50, 700000.00, 4.9, 5),
+('AirPods', 3, 200, 120000.00, 4.5, 30),
+('Watch 9', 4, 80, 150000.00, 4.2, 15),
+('iPad', 5, 30, 400000.00, 4.7, 7);
 
-SELECT * FROM Products;
-SELECT * FROM Customers;
-SELECT * FROM Orders;
-
-SELECT o.order_id, c.full_name, p.product_name, o.quantity 
-FROM Orders o, Customers c, Products p 
-WHERE o.customer_id = c.customer_id AND o.product_id = p.product_id;
+SELECT * FROM Customer;
+SELECT * FROM Categories;
+SELECT p.ProductName, c.CategoryName, p.Price FROM Product p JOIN Categories c ON p.ProductCategory = c.CategoryID;
