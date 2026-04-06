@@ -58,6 +58,17 @@ INSERT INTO Product (ProductName, ProductCategory, SaleCount, Price, ProductRati
 ('Watch 9', 4, 80, 150000.00, 4.2, 15),
 ('iPad', 5, 30, 400000.00, 4.7, 7);
 
+<<<<<<< HEAD
 SELECT * FROM Customer;
 SELECT * FROM Categories;
 SELECT p.ProductName, c.CategoryName, p.Price FROM Product p JOIN Categories c ON p.ProductCategory = c.CategoryID;
+=======
+SELECT * FROM Products;
+SELECT * FROM Customers;
+SELECT * FROM Orders;
+
+SELECT o.order_id, c.full_name, p.product_name, o.quantity 
+FROM Orders o, Customers c, Products p 
+WHERE o.customer_id = c.customer_id AND o.product_id = p.product_id;
+ПО1-24 - Хисметова Аружан
+>>>>>>> 2f9a6a08f47b0be39d273741ea2de38b5ef1e846
